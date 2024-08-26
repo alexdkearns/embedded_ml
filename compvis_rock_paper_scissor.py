@@ -136,7 +136,7 @@ for index in range(0,max_index):
 
 
 
-# answers: converter = """
+# answers: converter = ""
                             tf.lite.TFLiteConverter.from_saved_model(ROCK_PAPER_SCISSORS_SAVED_MODEL)
                             tflite_model = converter.convert()
                             interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_FILE)
