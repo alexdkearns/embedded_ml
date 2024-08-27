@@ -1,4 +1,3 @@
-%matplotlib inline
 import matplotlib.pyplot as plt
 import seaborn as sns; sns.set()
 import numpy as np
@@ -7,7 +6,7 @@ from sklearn.datasets import make_blobs
 num_centers = 3
 X_train, y_train_true = make_blobs(n_samples=300, centers=num_centers,
                                    cluster_std=0.40, random_state=0)
-plt.scatter(X_train[:, 0], X_train[:, 1], s=50);
+plt.scatter(X_train[:, 0], X_train[:, 1], s=50)
 
 
 from sklearn.cluster import KMeans
@@ -19,13 +18,13 @@ y_kmeans = kmeans.predict(X_train) #we determine the closest centroid for each d
 plt.scatter(X_train[:, 0], X_train[:, 1], c=y_kmeans, s=50, cmap='viridis')
 
 centers = kmeans.cluster_centers_
-plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5);
+plt.scatter(centers[:, 0], centers[:, 1], c='black', s=200, alpha=0.5)
 
 
 X_anomaly, y_anomaly_true = make_blobs(n_samples=300, centers=2,
                        cluster_std=0.40, random_state=1)
-plt.scatter(X_train[:, 0], X_train[:, 1], s=50);
-plt.scatter(X_anomaly[:,0], X_anomaly[:,1], s=50);
+plt.scatter(X_train[:, 0], X_train[:, 1], s=50)
+plt.scatter(X_anomaly[:,0], X_anomaly[:,1], s=50)
 
 percentile_treshold = 99
 
@@ -57,7 +56,7 @@ for i in range(len(X_train)):
 ax.scatter(X_train[:, 0], X_train[:, 1], c=colors, s=50, cmap='viridis')
 
 for i in range(len(centers)):
-  circle = plt.Circle((centers[i][0], centers[i][1]),center_99percentile_distance[i], color='black', alpha=0.1);
+  circle = plt.Circle((centers[i][0], centers[i][1]),center_99percentile_distance[i], color='black', alpha=0.1)
 
   fig, ax = plt.subplots()
 
@@ -87,7 +86,7 @@ for i in range(len(all_data)):
 ax.scatter(all_data[:, 0], all_data[:, 1], c=colors, s=50, cmap='viridis')
 
 for i in range(len(centers)):
-  circle = plt.Circle((centers[i][0], centers[i][1]),center_99percentile_distance[i], color='black', alpha=0.1);
+  circle = plt.Circle((centers[i][0], centers[i][1]),center_99percentile_distance[i], color='black', alpha=0.1)
   ax.add_artist(circle)
 
 print('Normal datapoints misclassified as abnormal: ', false_pos)
@@ -137,9 +136,7 @@ for i in range(len(normal_y)):
   min_distance = normal_distances[i][normal_y[i]]
   center_distances[normal_y[i]].append(min_distance)
 
-center_99percentile_distance = {key: np.percentile(center_distances[key], \
-                                                   percentile_treshold)   \
-                                for key in center_distances.keys()}
+center_99percentile_distance = {key: np.percentile(center_distances[key], percentile_treshold) for key in center_distances.keys()}
 
 print(center_99percentile_distance)
 
@@ -214,9 +211,7 @@ for i in range(len(normal_y)):
   min_distance = normal_distances[i][normal_y[i]]
   center_distances[normal_y[i]].append(min_distance)
 
-center_99percentile_distance = {key: np.percentile(center_distances[key], \
-                                                   percentile_treshold)   \
-                                for key in center_distances.keys()}
+center_99percentile_distance = {key: np.percentile(center_distances[key], percentile_treshold) for key in center_distances.keys()}
 
 print(center_99percentile_distance)
 
@@ -249,11 +244,8 @@ ax.scatter(all_data[:, 0], all_data[:, 1], c=colors, s=50, cmap='viridis')
 
 centers = kmeans.cluster_centers_
 for i in range(len(centers)):
-  circle = plt.Circle((centers[i][0], centers[i][1]),center_99percentile_distance[i], color='black', alpha=0.1);
+  circle = plt.Circle((centers[i][0], centers[i][1]),center_99percentile_distance[i], color='black', alpha=0.1)
   ax.add_artist(circle)
 
 print('Normal datapoints misclassified as abnormal: ', false_pos)
 print('Abnormal datapoints misclassified as normal: ', false_neg)
-
-
-

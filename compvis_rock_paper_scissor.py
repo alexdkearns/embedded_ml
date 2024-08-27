@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pylab as plt
 import tensorflow as tf
 import tensorflow_hub as hub
+from tensorflow_hub import KerasLayer
 import tensorflow_datasets as tfds
 from tqdm import tqdm
 import pathlib
@@ -31,10 +32,22 @@ MODULE_HANDLE ="https://tfhub.dev/google/tf2-preview/{}/feature_vector/4".format
 IMAGE_SIZE = (pixels, pixels)
 print("Using {} with input size {} and output dimension {}".format(MODULE_HANDLE, IMAGE_SIZE, FV_SIZE))
 
-feature_extractor = hub.KerasLayer(MODULE_HANDLE,
-                                   input_shape=IMAGE_SIZE + (3,), 
-                                   output_shape=[FV_SIZE],
-                                   trainable=False)
+
+# class HubLayer(tf.keras.layers.Layer):
+#     def __init__(self, handle):
+#         super(HubLayer, self).__init__()
+#         self.hub_layer = hub.KerasLayer(handle)
+    
+#     def call(self, inputs):
+#         return self.hub_layer(inputs)
+
+# feature_extractor = HubLayer(MODULE_HANDLE)
+
+feature_extractor = hub.KerasLayer(
+    MODULE_HANDLE,
+    input_shape=IMAGE_SIZE + (3,), 
+    output_shape=[FV_SIZE],
+    trainable=False)
 
 print("Building model with", MODULE_HANDLE)
 
@@ -56,14 +69,14 @@ hist = model.fit(train_batches,
                  validation_data=validation_batches)
 
 
-ROCK_PAPER_SCISSORS_SAVED_MODEL = "exp_saved_model"
+ROCK_PAPER_SCISSORS_SAVED_MODEL = "/Users/Alex/embedded_ml/exp_ssaved_model"
 tf.saved_model.save(model, ROCK_PAPER_SCISSORS_SAVED_MODEL)
 
 
-converter = # YOUR CODE GOES HERE #
-tflite_model = # YOUR CODE GOES HERE #
+converter = tf.lite.TFLiteConverter.from_saved_model(ROCK_PAPER_SCISSORS_SAVED_MODEL)
+tflite_model = tflite_model = converter.convert()
 
-tflite_models_dir = pathlib.Path("/tmp/")
+tflite_models_dir = pathlib.Path("/Users/Alex/embedded_ml/")
 tflite_model_file = tflite_models_dir/'model1.tflite'
 tflite_model_file.write_bytes(tflite_model)
 # This will report back the file size in bytes
@@ -71,8 +84,10 @@ tflite_model_file.write_bytes(tflite_model)
 # but would work on a mobile phone
 
 # Load TFLite model and allocate tensors.
-TFLITE_MODEL_FILE = '/tmp/model1.tflite'
-interpreter = # YOUR CODE GOES HERE #
+TFLITE_MODEL_FILE = '/Users/Alex/embedded_ml/model1.tflite'
+
+                            
+interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_FILE)
 interpreter.allocate_tensors()
 
 input_index = interpreter.get_input_details()[0]["index"]
@@ -125,19 +140,10 @@ def plot_image(i, predictions_array, true_label, img):
                                          class_names[true_label]), color=color)
 
 
-    #@title Visualize the outputs { run: "auto" }
+#@title Visualize the outputs { run: "auto" }
 max_index = 73 #@param {type:"slider", min:0, max:99, step:1}
 for index in range(0,max_index):
   plt.figure(figsize=(6,3))
   plt.subplot(1,2,1)
   plot_image(index, predictions, test_labels, test_imgs)
   plt.show()
-
-
-
-
-# answers: converter = ""
-                            tf.lite.TFLiteConverter.from_saved_model(ROCK_PAPER_SCISSORS_SAVED_MODEL)
-                            tflite_model = converter.convert()
-                            interpreter = tf.lite.Interpreter(model_path=TFLITE_MODEL_FILE)
-                        """
