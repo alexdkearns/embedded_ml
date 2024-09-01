@@ -69,7 +69,7 @@ hist = model.fit(train_batches,
                  validation_data=validation_batches)
 
 
-ROCK_PAPER_SCISSORS_SAVED_MODEL = "/Users/Alex/embedded_ml/exp_ssaved_model"
+ROCK_PAPER_SCISSORS_SAVED_MODEL = "/Users/Alex/embedded_ml/exp_saved_model"
 tf.saved_model.save(model, ROCK_PAPER_SCISSORS_SAVED_MODEL)
 
 

@@ -28,16 +28,12 @@ import tensorflow as tf
 
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
-!pip install --upgrade --no-cache-dir gdown
-!gdown --id 1lYOgCLLJU8TCIeTxJHkjsxBq_GPzQYb9
-
-!unzip edx_transfer_learningv3.zip
 
 import os
-os.chdir("/content/edx_transfer_learningv3/edx_transfer_learning/train/without_mask")
+os.chdir("/Users/Alex/embedded_ml/edx_transfer_learningv3/edx_transfer_learning/train/without_mask")
 
-path_to_zip = "/content/"
-PATH = os.path.join(os.path.dirname(path_to_zip), 'edx_transfer_learningv3/edx_transfer_learning/')
+path_to_zip = "/Users/Alex/embedded_ml/edx_transfer_learningv3.zip"
+PATH = os.path.join(os.path.dirname(path_to_zip), '/Users/Alex/embedded_ml/edx_transfer_learningv3/edx_transfer_learning')
 train_dir = os.path.join(PATH, 'train')
 validation_dir = os.path.join(PATH, 'validation')
 
@@ -133,7 +129,7 @@ model = tf.keras.Model(inputs, outputs)
 
 
 base_learning_rate = 0.0001
-model.compile(optimizer=tf.keras.optimizers.Adam(lr=base_learning_rate),
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=base_learning_rate),
               loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
               metrics=['accuracy'])
 
@@ -144,7 +140,7 @@ loss0, accuracy0 = model.evaluate(validation_dataset)
 print("initial loss: {:.2f}".format(loss0))
 print("initial accuracy: {:.2f}".format(accuracy0))
 
-EPOCHS = # YOUR CODE HERE #
+EPOCHS = 10
 history = model.fit(train_dataset,
                     epochs=EPOCHS,
                     validation_data=validation_dataset)
@@ -196,4 +192,3 @@ for i in range(9):
   plt.title(class_names[predictions[i]])
   plt.axis("off")
 
-EPOCHS = 10

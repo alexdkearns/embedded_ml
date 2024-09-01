@@ -1,14 +1,33 @@
-!wget https://github.com/tensorflow/tensorflow/archive/v2.14.0.zip
-!unzip v2.14.0.zip &> 0
-!mv tensorflow-2.14.0/ tensorflow/
-
 import tensorflow.compat.v1 as tf
 import sys
-# We add this path so we can import the speech processing modules.
-sys.path.append("/content/tensorflow/tensorflow/examples/speech_commands/")
+import subprocess
+
+# # Step 1: Download the TensorFlow repository
+# subprocess.run(
+#     ["wget", "https://github.com/tensorflow/tensorflow/archive/v2.14.0.zip"],
+#     check=True
+# )
+
+# # Step 2: Unzip the downloaded file
+# subprocess.run(
+#     ["unzip", "v2.14.0.zip"],
+#     stdout=subprocess.DEVNULL,  # Suppress the output
+#     stderr=subprocess.DEVNULL  # Suppress errors
+# )
+
+# # Step 3: Move the extracted directory to the desired location
+# subprocess.run(
+#     ["mv", "tensorflow-2.14.0/", "tensorflow/"],
+#     check=True
+# )
+
+# Step 4: Append the necessary directory to sys.path for imports
+sys.path.append("/Users/Alex/embedded_ml/pretrained_keyword/tensorflow/tensorflow/examples/speech_commands")
+
 import input_data
 import models
 import numpy as np
+
 import pickle
 
 
@@ -70,20 +89,41 @@ DATA_URL = 'https://storage.googleapis.com/download.tensorflow.org/data/speech_c
 VALIDATION_PERCENTAGE = 10
 TESTING_PERCENTAGE = 10
 
+# step 1: download file using curl
+subprocess.run(
+  ["curl", "-O", "https://storage.googleapis.com/download.tensorflow.org/models/tflite/speech_micro_train_2020_05_10.tgz"],
+  check=True
+)
 
-!curl -O "https://storage.googleapis.com/download.tensorflow.org/models/tflite/speech_micro_train_2020_05_10.tgz"
-!tar xzf speech_micro_train_2020_05_10.tgz
+# step 2 extract downloaded tar file
+subprocess.run(
+  ["tar", "xzf", "speech_micro_train_2020_05_10.tgz"],
+  check=True
+)
+
+# define total steps variable
 TOTAL_STEPS = 15000 # used to identify which checkpoint file
 
-!rm -rf {SAVED_MODEL}
-!python tensorflow/tensorflow/examples/speech_commands/freeze.py \
---wanted_words=$WANTED_WORDS \
---window_stride_ms=$WINDOW_STRIDE \
---preprocess=$PREPROCESS \
---model_architecture=$MODEL_ARCHITECTURE \
---start_checkpoint=$TRAIN_DIR$MODEL_ARCHITECTURE'.ckpt-'{TOTAL_STEPS} \
---save_format=saved_model \
---output_file={SAVED_MODEL}
+# step 3:
+subprocess.run(
+    ["rm", "-rf", SAVED_MODEL],
+    check=True
+)
+
+# Step 4: Run the TensorFlow freeze script
+subprocess.run(
+    [
+        "python", "/Users/Alex/embedded_ml/pretrained_keyword/tensorflow/tensorflow/examples/speech_commands/freeze.py",
+        "--wanted_words", WANTED_WORDS,
+        "--window_stride_ms", str(WINDOW_STRIDE),
+        "--preprocess", PREPROCESS,
+        "--model_architecture", MODEL_ARCHITECTURE,
+        "--start_checkpoint", f"{TRAIN_DIR}{MODEL_ARCHITECTURE}.ckpt-{str(TOTAL_STEPS)}",
+        "--save_format", "saved_model",
+        "--output_file", SAVED_MODEL
+    ],
+    check=True
+)
 
 model_settings = models.prepare_model_settings(
     len(input_data.prepare_words_list(WANTED_WORDS.split(','))),
@@ -176,7 +216,6 @@ run_tflite_inference_testSet(MODEL_TFLITE, model_type='Quantized')
 
 
 from IPython.display import HTML, Audio
-!wget --no-check-certificate --content-disposition https://github.com/tinyMLx/colabs/blob/master/yes_no.pkl?raw=true
 print("Wait a minute for the file to sync in the Colab and then run the next cell!")
 
 fid = open('yes_no.pkl', 'rb')
@@ -199,37 +238,24 @@ sr_no3 = audio_files['sr_no3']
 sr_no4 = audio_files['sr_no4']
 
 Audio(yes1, rate=sr_yes1)
-
 Audio(yes2, rate=sr_yes2)
-
 Audio(yes3, rate=sr_yes3)
-
-
 Audio(yes4, rate=sr_yes4)
 
-Audio(yes5, rate=sr_yes5)
-
-Audio(yes6, rate=sr_yes6)
 
 Audio(no1, rate=sr_no1)
-
 Audio(no2, rate=sr_no2)
-
 Audio(no3, rate=sr_no3)
 
-
-!pip install ffmpeg-python &> 0
 from google.colab.output import eval_js
 from base64 import b64decode
 import numpy as np
 from scipy.io.wavfile import read as wav_read
 import io
 import ffmpeg
-!pip install librosa
+
 import librosa
 import scipy.io.wavfile
-!git clone https://github.com/petewarden/extract_loudest_section.git
-!make -C extract_loudest_section/
 print("Packages Imported, Extract_Loudest_Section Built")
 
 
@@ -244,7 +270,11 @@ def run_tflite_inference_singleFile(tflite_model_path, custom_audio, sr_custom_a
   custom_audio_resampled = librosa.resample(librosa.to_mono(np.float64(custom_audio)), orig_sr = sr_custom_audio, target_sr = SAMPLE_RATE)
   # Then extract the loudest one second
   scipy.io.wavfile.write('custom_audio.wav', SAMPLE_RATE, np.int16(custom_audio_resampled))
-  !/tmp/extract_loudest_section/gen/bin/extract_loudest_section custom_audio.wav ./trimmed
+  subprocess.run(
+        ["/tmp/extract_loudest_section/gen/bin/extract_loudest_section", custom_audio.wav, './trimmed'],
+        check=True
+    )
+  # !/tmp/extract_loudest_section/gen/bin/extract_loudest_section custom_audio.wav ./trimmed
   # Finally pass it through the TFLiteMicro preprocessor to produce the 
   # spectrogram/MFCC input that the model expects
   custom_model_settings = models.prepare_model_settings(

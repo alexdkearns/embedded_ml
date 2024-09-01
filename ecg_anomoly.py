@@ -58,7 +58,7 @@ plt.plot(np.arange(140), anomalous_train_data[0])
 plt.title("An Anomalous ECG")
 plt.show()
 
-EMBEDDING_SIZE = # YOUR CODE GOES HERE #
+EMBEDDING_SIZE = 2
 
 class AnomalyDetector(Model):
   def __init__(self):
@@ -134,15 +134,19 @@ colorMap=plt.get_cmap('jet', thresholdsLength)
 for i in range(0, thresholdsLength, thresholds_every):
   threshold_value_with_max_four_decimals = str(thresholds[i])[:5]
   plt.scatter(fpr[i], tpr[i], c='black')
-  plt.text(fpr[i] - 0.03, tpr[i] + 0.005, threshold_value_with_max_four_decimals, fontdict={'size': 15});
+  plt.text(fpr[i] - 0.03, tpr[i] + 0.005, threshold_value_with_max_four_decimals, fontdict={'size': 15})
 
 plt.show()
 
 roc_auc = auc(fpr, tpr)
 print(roc_auc)
 
-threshold = # YOUR CODE GOES HERE #
-print("Chosen Threshold: ", threshold)
+# compute optimal threshold using Youdens J statistic
+J = tpr - fpr
+ix = np.argmax(J)
+threshold = thresholds[ix]
+
+print("Chosen Threshold: ",threshold)
 
 def predict(model, data, threshold):
   reconstructions = model(data)
@@ -157,5 +161,3 @@ def print_stats(predictions, labels):
 
 preds, scores = predict(autoencoder, test_data, threshold)
 print_stats(preds, test_labels)
-
-EMBEDDING_SIZE = 2

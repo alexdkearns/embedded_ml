@@ -1,6 +1,5 @@
 # Load libraries
 import sys
-
 import tensorflow as tf
 
 # Load in fashion MNIST
